@@ -1,86 +1,188 @@
+/*
+- only accept arrow keys
+*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <ncurses.h>
 #include <time.h>
+
+#define WIDTH 20
+#define HEIGHT 10
 
 typedef struct 
 {
-	int food_x;
-	int food_y;
+	int x;
+	int y;
+} fd;
 
+typedef struct
+{
 	int head_x;
 	int head_y;
 
-	int tail[1];
-
 	int direction;
-} content;
+} snk;
 
-void screen_render(int board[10][20], content contents);
-void place_food(content *contents);
+int game_over(int game_state, int i);
+void display(fd food, snk snake);
+int move_snake(snk *snake);
+void eat_food(snk snake, fd *food);
 
 int main(void)
 {
-	// intialize randomizer
+	// initilialize randomizer
 	srand(time(NULL));
+	int game_state = 1;
 
-	// define necessary variables
-	int board[10][20];
-	content contents;
+	fd food;
+	food.x = 1 + rand() % WIDTH;
+	food.y = 1 + rand() % HEIGHT;
 
-	// build board
-	place_food(&contents);
-	contents.head_x = 1 + rand() % 10;
-	contents.head_y = 1+ rand() % 21;	
+	snk snake;
+	snake.head_x = 1 + rand() % WIDTH;
+	snake.head_y = 1 + rand() % HEIGHT;
+	snake.direction = 0;
 
-	while(0)
+	// initialization
+	initscr(); // set up screen
+	cbreak(); // disable enter requirement
+	noecho(); // doesn't print typed keys
+	keypad(stdscr, TRUE); // makes arrow keys readable
+	nodelay(stdscr, TRUE); // doesn't wait for key to be entered
+
+	int i = 4;
+	while (game_state)
 	{
-		// clear terminal and render screen
-		printf("\033[2J\033[H");
-		screen_render(board, contents);
+		// build virtual screen
+		clear();
+		display(food, snake);
 
-		// wait for user input
+		// push virtual screen to real screen
+		refresh();
 
-		// move
+		// make changes
+		// get player input 
+		int ch = getch();
+		if (ch == KEY_UP || ch == KEY_DOWN || ch == KEY_LEFT || ch == KEY_RIGHT)
+		{
+			snake.direction = ch;
+		}
 
-		// sleep tick
+		// eat food if player's position eawuals the food's position
+		eat_food(snake, &food);
+
+		// move snake based on player input
+		move_snake(&snake);
+
+		// gameover?
+		//game_state = game_over(game_state, i);
+
+		// wait
+		usleep(100000);
+	}
+	
+	// restore terminal to normal state
+	endwin();
+
+	// end program
+	return 0;
+}
+
+void eat_food(snk snake, fd *food)
+{
+	if (food->x == snake.head_x && food->y == snake.head_y)
+	{
+		food->x = 1 + rand() % WIDTH;
+		food->y = 1 + rand() % HEIGHT;
+	}
+}
+
+int move_snake(snk *snake)
+{
+	if (snake->direction != 0)
+	{
+		if (snake->direction == KEY_UP) // up
+		{
+			snake->head_y -= 1;
+			return 0;
+		}
+
+		if (snake->direction == KEY_DOWN) // down
+		{
+			snake->head_y += 1;
+			return 0;
+		}
+
+		if (snake->direction == KEY_LEFT) // left
+		{
+			snake->head_x -= 1;
+			return 0;
+		}
+
+		if (snake->direction == KEY_RIGHT) // right
+		{
+			snake->head_x += 1;
+			return 0;
+		}
 	}
 
 	return 0;
 }
 
-void move()
+void display(fd food, snk snake)
 {
-	//
-}
-
-void place_food(content *contents)
-{
-	contents->food_x = rand() % 11;
-	contents->food_y = rand() % 21;
-}
-
-void screen_render(int board[10][20], content contents)
-{
-	printf("+--------------------+\n");
-	for (int i = 0; i < 10; i++)
+	// print top edge
+	printw("+");
+	for (int i = 0; i < WIDTH; i++)
 	{
-		printf("|");
-		for (int j = 0; j < 20; j++)
+		printw("-");
+	}
+	printw("+\n");
+
+	for (int i = 0; i <= HEIGHT; i++)
+	{
+		printw("|");
+
+		for (int j = 0; j < WIDTH; j++)
 		{
-			if (contents.food_x == i && contents.food_y == j)
+			if (food.x == j && food.y == i)
 			{
-				printf("$");
+				printw("$");
 			}
-			else if (contents.head_x == i && contents.head_y == j)
+			else if (snake.head_x == j && snake.head_y == i)
 			{
-				printf("@");
+				printw("@");
 			}
 			else
 			{
-				printf(" ");
+				printw(" ");
 			}
 		}
-		printf("|\n");
+
+		printw("|\n");
 	}
-	printf("+--------------------+\n");
+
+	printw("\n");
+
+	// print bottom edge
+	printw("+");
+	for (int i = 0; i < WIDTH; i++)
+	{
+		printw("-");
+	}
+	printw("+\n");
+}
+
+int game_over(int game_state, int i)
+{
+	if (game_state == 1)
+	{
+		if (i >= 10)
+		{
+			return 0;
+		}
+	}
+
+	return 1;
 }

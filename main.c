@@ -14,6 +14,7 @@
 #define MAX 99
 
 int body_length = 1;
+int speed = 100000;
 
 typedef struct 
 {
@@ -99,7 +100,7 @@ int main(void)
 		//game_state = game_over(game_state, i);
 
 		// wait
-		usleep(100000);
+		usleep(speed);
 	}
 	
 	// restore terminal to normal state
@@ -147,6 +148,9 @@ int move_snake(snk *snake, bdy body[body_length])
 
 			// update head
 			snake->head_y -= 1;
+
+			// update speed
+			speed = 145000;
 		}
 		else if (snake->direction == KEY_DOWN) // down
 		{
@@ -155,6 +159,9 @@ int move_snake(snk *snake, bdy body[body_length])
 
 			// update head
 			snake->head_y += 1;
+
+			// update speed
+			speed = 145000;
 		}
 		else if (snake->direction == KEY_LEFT) // left
 		{
@@ -163,6 +170,9 @@ int move_snake(snk *snake, bdy body[body_length])
 
 			// update head
 			snake->head_x -= 1;
+
+			// update speed
+			speed = 100000;
 		}
 		else if (snake->direction == KEY_RIGHT) // right
 		{
@@ -171,6 +181,9 @@ int move_snake(snk *snake, bdy body[body_length])
 
 			// update head
 			snake->head_x += 1;
+
+			// update speed
+			speed = 100000;
 		}
 	}
 

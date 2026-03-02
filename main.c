@@ -1,8 +1,6 @@
 /*
-- snake body
 - game over
 - slow vertical speed
-- prevent snake from walking backwards on itself
 - dynamic array size for body
 */
 #include <stdio.h>
@@ -29,6 +27,7 @@ typedef struct
 	int head_y;
 
 	int direction;
+	int previous_direction;
 } snk;
 
 typedef struct
@@ -58,6 +57,7 @@ int main(void)
 	snake.head_x = 1 + rand() % WIDTH;
 	snake.head_y = 1 + rand() % HEIGHT;
 	snake.direction = 0;
+	snake.previous_direction = 0;
 
 	// initialize body
 	bdy body[MAX];
@@ -84,7 +84,7 @@ int main(void)
 		// make changes
 		// get player input 
 		int ch = getch();
-		if (ch == KEY_UP || ch == KEY_DOWN || ch == KEY_LEFT || ch == KEY_RIGHT)
+		if (ch == KEY_UP && snake.direction != KEY_DOWN|| ch == KEY_DOWN && snake.direction != KEY_UP|| ch == KEY_LEFT && snake.direction != KEY_RIGHT|| ch == KEY_RIGHT && snake.direction != KEY_LEFT)
 		{
 			snake.direction = ch;
 		}
@@ -147,7 +147,6 @@ int move_snake(snk *snake, bdy body[body_length])
 
 			// update head
 			snake->head_y -= 1;
-			
 		}
 		else if (snake->direction == KEY_DOWN) // down
 		{
@@ -169,7 +168,7 @@ int move_snake(snk *snake, bdy body[body_length])
 		{
 			// update body
 			move_body(body, snake->head_x, snake->head_y);
-			
+
 			// update head
 			snake->head_x += 1;
 		}

@@ -1,5 +1,4 @@
 /*
-- fix food and player placement boundaries
 - dynamic array size for body
 */
 #include <stdio.h>
@@ -148,7 +147,7 @@ int move_snake(snk *snake, bdy body[body_length])
 			snake->head_y -= 1;
 
 			// update speed
-			speed = 145000;
+			speed = 150000;
 		}
 		else if (snake->direction == KEY_DOWN) // down
 		{
@@ -159,7 +158,7 @@ int move_snake(snk *snake, bdy body[body_length])
 			snake->head_y += 1;
 
 			// update speed
-			speed = 145000;
+			speed = 150000;
 		}
 		else if (snake->direction == KEY_LEFT) // left
 		{
@@ -202,7 +201,7 @@ void display(fd food, snk snake, bdy body[body_length])
 	{
 		printw("|");
 
-		for (int j = 0; j < WIDTH; j++)
+		for (int j = 1; j <= WIDTH; j++)
 		{
 			// food
 			if (food.x == j && food.y == i)
@@ -256,7 +255,7 @@ int game_over(int game_state, snk snake, bdy body[body_length])
 	if (game_state == 1)
 	{
 		// wall collision
-		if (snake.head_x > WIDTH || snake.head_y > HEIGHT || snake.head_x < 0 || snake.head_y < 0)
+		if (snake.head_x > WIDTH || snake.head_y > HEIGHT || snake.head_x <= 0 || snake.head_y <= 0)
 		{
 			return 0;
 		}

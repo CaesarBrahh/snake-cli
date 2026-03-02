@@ -1,6 +1,5 @@
 /*
-- game over
-- slow vertical speed
+- fix food and player placement boundaries
 - dynamic array size for body
 */
 #include <stdio.h>
@@ -37,7 +36,7 @@ typedef struct
 	int y;
 } bdy;
 
-int game_over(int game_state, int i);
+int game_over(int game_state, snk snake, bdy body[body_length]);
 void display(fd food, snk snake, bdy body[body_length]);
 int move_snake(snk *snake, bdy body[body_length]);
 void eat_food(snk snake, fd *food);
@@ -62,7 +61,7 @@ int main(void)
 
 	// initialize body
 	bdy body[MAX];
-	body[0].x = snake.head_x;
+	body[0].x = snake.head_x-1;
 	body[0].y = snake.head_y;
 
 	// initialize ncurses
@@ -72,7 +71,6 @@ int main(void)
 	keypad(stdscr, TRUE); // makes arrow keys readable
 	nodelay(stdscr, TRUE); // doesn't wait for key to be entered
 
-	int i = 4;
 	while (game_state)
 	{
 		// build virtual screen
@@ -90,14 +88,14 @@ int main(void)
 			snake.direction = ch;
 		}
 
+		// gameover?
+		game_state = game_over(game_state, snake, body);
+
 		// eat food if player's position eawuals the food's position
 		eat_food(snake, &food);
 
 		// move snake based on player input
 		move_snake(&snake, body);
-
-		// gameover?
-		//game_state = game_over(game_state, i);
 
 		// wait
 		usleep(speed);
@@ -253,13 +251,23 @@ void display(fd food, snk snake, bdy body[body_length])
 	printw("+\n");
 }
 
-int game_over(int game_state, int i)
+int game_over(int game_state, snk snake, bdy body[body_length])
 {
 	if (game_state == 1)
 	{
-		if (i >= 10)
+		// wall collision
+		if (snake.head_x > WIDTH || snake.head_y > HEIGHT || snake.head_x < 0 || snake.head_y < 0)
 		{
 			return 0;
+		}
+
+		// body collision
+		for (int i = 0; i < body_length; i++)
+		{
+			if (snake.head_x == body[i].x && snake.head_y == body[i].y)
+			{
+				return 0;
+			}
 		}
 	}
 

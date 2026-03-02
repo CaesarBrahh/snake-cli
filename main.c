@@ -1,5 +1,5 @@
 /*
-- dynamic array size for body
+- organization
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@
 #define HEIGHT 10
 #define MAX 99
 
-int body_length = 1;
+int body_length = 0;
 int speed = 100000;
 
 typedef struct 
@@ -60,8 +60,6 @@ int main(void)
 
 	// initialize body
 	bdy body[MAX];
-	body[0].x = snake.head_x-1;
-	body[0].y = snake.head_y;
 
 	// initialize ncurses
 	initscr(); // set up screen
@@ -255,7 +253,7 @@ int game_over(int game_state, snk snake, bdy body[body_length])
 	if (game_state == 1)
 	{
 		// wall collision
-		if (snake.head_x > WIDTH || snake.head_y > HEIGHT || snake.head_x <= 0 || snake.head_y <= 0)
+		if (snake.head_x >= WIDTH || snake.head_y > HEIGHT || snake.head_x <= 0 || snake.head_y < 0)
 		{
 			return 0;
 		}

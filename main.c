@@ -3,6 +3,7 @@
 - game over
 - slow vertical speed
 - prevent snake from walking backwards on itself
+- dynamic array size for body
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@
 
 #define WIDTH 20
 #define HEIGHT 10
+#define MAX 99
 
 int body_length = 1;
 
@@ -27,8 +29,6 @@ typedef struct
 	int head_y;
 
 	int direction;
-
-	int body_length;
 } snk;
 
 typedef struct
@@ -60,7 +60,7 @@ int main(void)
 	snake.direction = 0;
 
 	// initialize body
-	bdy body[body_length];
+	bdy body[MAX];
 	body[0].x = snake.head_x;
 	body[0].y = snake.head_y;
 
@@ -118,8 +118,22 @@ void eat_food(snk snake, fd *food)
 		food->y = 1 + rand() % HEIGHT;
 
 		// increment snake length
-		snake.body_length++;
+		body_length++;
 	}
+}
+
+void move_body(bdy body[body_length], int new_x, int new_y)
+{
+	// remove oldest
+	// shift everything up by 1 removing the first (oldest) element
+	for (int i = 0; i < body_length; i++)
+	{
+		body[i] = body[i+1];
+	}
+
+	// add newest to back
+	body[body_length-1].x = new_x;
+	body[body_length-1].y = new_y;
 }
 
 int move_snake(snk *snake, bdy body[body_length])
@@ -128,51 +142,36 @@ int move_snake(snk *snake, bdy body[body_length])
 	{
 		if (snake->direction == KEY_UP) // up
 		{
+			// update body
+			move_body(body, snake->head_x, snake->head_y);
+
 			// update head
 			snake->head_y -= 1;
-
-			// update body
-			// for (int i = 0; i < body_length; i++)
-			// {
-			// 	body[i].x = snake->head_x;
-			// 	body[i].y = snake->head_y += 1;
-			// }
+			
 		}
 		else if (snake->direction == KEY_DOWN) // down
 		{
+			// update body
+			move_body(body, snake->head_x, snake->head_y);
+
 			// update head
 			snake->head_y += 1;
-
-			// update body
-			// for (int i = 0; i < body_length; i++)
-			// {
-			// 	body[i].x = snake->head_x;
-			// 	body[i].y = snake->head_y -= 1;
-			// }
 		}
 		else if (snake->direction == KEY_LEFT) // left
 		{
+			// update body
+			move_body(body, snake->head_x, snake->head_y);
+
 			// update head
 			snake->head_x -= 1;
-
-			// update body
-			// for (int i = 0; i < body_length; i++)
-			// {
-			// 	body[i].x = snake->head_x += 1;
-			// 	body[i].y = snake->head_y;
-			// }
 		}
 		else if (snake->direction == KEY_RIGHT) // right
 		{
+			// update body
+			move_body(body, snake->head_x, snake->head_y);
+			
 			// update head
 			snake->head_x += 1;
-
-			// update body
-			// for (int i = 0; i < body_length; i++)
-			// {
-			// 	body[i].x = snake->head_x -= 1;
-			// 	body[i].y = snake->head_y;
-			// }
 		}
 	}
 

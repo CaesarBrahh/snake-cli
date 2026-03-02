@@ -1,4 +1,5 @@
 /*
+- blocks
 - organization
 */
 #include <stdio.h>
@@ -35,10 +36,10 @@ typedef struct
 	int y;
 } bdy;
 
-int game_over(int game_state, snk snake, bdy body[body_length]);
-void display(fd food, snk snake, bdy body[body_length]);
-int move_snake(snk *snake, bdy body[body_length]);
-void eat_food(snk snake, fd *food);
+int game_over(int game_state, snk snake, bdy body[MAX], bdy blocks[MAX]);
+void display(fd food, snk snake, bdy body[MAX], bdy blocks[MAX]);
+int move_snake(snk *snake, bdy body[MAX]);
+void eat_food(snk snake, fd *food, bdy blocks[MAX]);
 
 int main(void)
 {
@@ -58,8 +59,9 @@ int main(void)
 	snake.direction = 0;
 	snake.previous_direction = 0;
 
-	// initialize body
+	// initialize body and blocks
 	bdy body[MAX];
+	bdy blocks[MAX];
 
 	// initialize ncurses
 	initscr(); // set up screen
@@ -72,7 +74,7 @@ int main(void)
 	{
 		// build virtual screen
 		clear();
-		display(food, snake, body);
+		display(food, snake, body, blocks);
 
 		// push virtual screen to real screen
 		refresh();
@@ -86,10 +88,10 @@ int main(void)
 		}
 
 		// gameover?
-		game_state = game_over(game_state, snake, body);
+		game_state = game_over(game_state, snake, body, blocks);
 
 		// eat food if player's position eawuals the food's position
-		eat_food(snake, &food);
+		eat_food(snake, &food, blocks);
 
 		// move snake based on player input
 		move_snake(&snake, body);
@@ -105,15 +107,19 @@ int main(void)
 	return 0;
 }
 
-void eat_food(snk snake, fd *food)
+void eat_food(snk snake, fd *food, bdy blocks[MAX])
 {
 	if (food->x == snake.head_x && food->y == snake.head_y)
 	{
+		// add block
+		blocks[body_length].x = food->x;
+		blocks[body_length].y = food->y;
+
 		// change food position
 		food->x = 1 + rand() % WIDTH;
 		food->y = 1 + rand() % HEIGHT;
 
-		// increment snake length
+		// increment snake and block length
 		body_length++;
 	}
 }
@@ -132,7 +138,7 @@ void move_body(bdy body[body_length], int new_x, int new_y)
 	body[body_length-1].y = new_y;
 }
 
-int move_snake(snk *snake, bdy body[body_length])
+int move_snake(snk *snake, bdy body[MAX])
 {
 	if (snake->direction != 0)
 	{
@@ -185,7 +191,7 @@ int move_snake(snk *snake, bdy body[body_length])
 	return 0;
 }
 
-void display(fd food, snk snake, bdy body[body_length])
+void display(fd food, snk snake, bdy body[MAX], bdy blocks[MAX])
 {
 	// print top edge
 	printw("+");
@@ -224,6 +230,12 @@ void display(fd food, snk snake, bdy body[body_length])
 						is_body = 1;
 						break;
 					}
+					else if (blocks[k].x == j && blocks[k].y == i)
+					{
+						printw("X");
+						is_body = 1;
+						break;
+					}
 				}
 
 				// empty space
@@ -248,7 +260,7 @@ void display(fd food, snk snake, bdy body[body_length])
 	printw("+\n");
 }
 
-int game_over(int game_state, snk snake, bdy body[body_length])
+int game_over(int game_state, snk snake, bdy body[MAX], bdy blocks[MAX])
 {
 	if (game_state == 1)
 	{
@@ -258,10 +270,17 @@ int game_over(int game_state, snk snake, bdy body[body_length])
 			return 0;
 		}
 
-		// body collision
+		// body or block collision
 		for (int i = 0; i < body_length; i++)
 		{
+			// body
 			if (snake.head_x == body[i].x && snake.head_y == body[i].y)
+			{
+				return 0;
+			}
+
+			// block
+			if (snake.head_x == blocks[i].x && snake.head_y == blocks[i].y)
 			{
 				return 0;
 			}

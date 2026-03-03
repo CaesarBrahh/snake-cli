@@ -122,7 +122,7 @@ void eat_food(snk snake, fd *food, bdy blocks[MAX])
 		do
 		{
 			c = 0;
-			
+
 			food->x = 1 + rand() % WIDTH;
 			food->y = 1 + rand() % HEIGHT;
 

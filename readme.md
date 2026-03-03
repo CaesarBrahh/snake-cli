@@ -4,7 +4,7 @@ A classic Snake game implemented in C using the ncurses library for real-time te
 
 This version introduces a unique twist: every piece of food consumed leaves behind a permanent block on the board. Colliding with one of these blocks results in game over, increasing the difficulty over time and adding a strategic layer beyond traditional Snake mechanics.
 
-![Snake Demo](demo.gif)
+![Snake Demo](assets/demo.gif)
 
 ---
 
@@ -25,11 +25,11 @@ Note: the snake cannot reverse direction.
 
 | Symbol | Description |
 |--------|-------------|
-| `@` | Snake head (player-controlled) |
+| `@` | Snake head |
 | `0` | Snake body segments |
-| `$` | Food (increases length and spawns a block) |
+| `$` | Food |
 | `X` | Permanent obstacle block |
-| `+` `-` `|` | Board boundary walls |
+| `+` `-` `\|` | Board boundary walls |
 
 ---
 

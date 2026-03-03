@@ -9,13 +9,14 @@ A classic Snake game implemented in C using the ncurses library for real-time te
 
 ## Controls
 
-Key 	Action
+| Key | Action    |
+|-----|-----------|
+| ↑   | Move Up   |
+| ↓   | Move Down |
+| ←   | Move Left |
+| →   | Move Right|
 
-↑ 		Move Up
-↓		Move Down
-←		Move Left
-→		Move Right
-
+Note: the snake cannot reverse direction.
 
 ---
 

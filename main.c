@@ -1,5 +1,6 @@
 /*
-- blocks
+- ensure food isn't placed on a block
+- fix up edges lowkeyly
 - organization
 */
 #include <stdio.h>
@@ -115,12 +116,25 @@ void eat_food(snk snake, fd *food, bdy blocks[MAX])
 		blocks[body_length].x = food->x;
 		blocks[body_length].y = food->y;
 
-		// change food position
-		food->x = 1 + rand() % WIDTH;
-		food->y = 1 + rand() % HEIGHT;
-
 		// increment snake and block length
 		body_length++;
+
+		// change food position
+		int c = 0;
+		do
+		{
+			food->x = 1 + rand() % WIDTH;
+			food->y = 1 + rand() % HEIGHT;
+
+			for (int i = 0; i < body_length; i++)
+			{
+				if (blocks[i].x == food->x && blocks[i].y == food->y)
+				{
+					c = 1;
+					break;
+				}
+			}
+		} while (c);
 	}
 }
 

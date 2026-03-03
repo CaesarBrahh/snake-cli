@@ -1,6 +1,5 @@
 /*
-- ensure food isn't placed on a block
-- fix up edges lowkeyly
+- game breaks at 13 points
 - organization
 */
 #include <stdio.h>
@@ -73,14 +72,6 @@ int main(void)
 
 	while (game_state)
 	{
-		// build virtual screen
-		clear();
-		display(food, snake, body, blocks);
-
-		// push virtual screen to real screen
-		refresh();
-
-		// make changes
 		// get player input 
 		int ch = getch();
 		if (ch == KEY_UP && snake.direction != KEY_DOWN|| ch == KEY_DOWN && snake.direction != KEY_UP|| ch == KEY_LEFT && snake.direction != KEY_RIGHT|| ch == KEY_RIGHT && snake.direction != KEY_LEFT)
@@ -88,14 +79,21 @@ int main(void)
 			snake.direction = ch;
 		}
 
-		// gameover?
-		game_state = game_over(game_state, snake, body, blocks);
-
 		// eat food if player's position eawuals the food's position
 		eat_food(snake, &food, blocks);
 
 		// move snake based on player input
 		move_snake(&snake, body);
+
+		// gameover?
+		game_state = game_over(game_state, snake, body, blocks);
+
+		// build virtual screen
+		clear();
+		display(food, snake, body, blocks);
+
+		// push virtual screen to real screen
+		refresh();
 
 		// wait
 		usleep(speed);
@@ -120,9 +118,11 @@ void eat_food(snk snake, fd *food, bdy blocks[MAX])
 		body_length++;
 
 		// change food position
-		int c = 0;
+		int c;
 		do
 		{
+			c = 0;
+			
 			food->x = 1 + rand() % WIDTH;
 			food->y = 1 + rand() % HEIGHT;
 
@@ -165,7 +165,7 @@ int move_snake(snk *snake, bdy body[MAX])
 			snake->head_y -= 1;
 
 			// update speed
-			speed = 150000;
+			speed = 200000;
 		}
 		else if (snake->direction == KEY_DOWN) // down
 		{
@@ -176,7 +176,7 @@ int move_snake(snk *snake, bdy body[MAX])
 			snake->head_y += 1;
 
 			// update speed
-			speed = 150000;
+			speed = 200000;
 		}
 		else if (snake->direction == KEY_LEFT) // left
 		{
@@ -187,7 +187,7 @@ int move_snake(snk *snake, bdy body[MAX])
 			snake->head_x -= 1;
 
 			// update speed
-			speed = 100000;
+			speed = 150000;
 		}
 		else if (snake->direction == KEY_RIGHT) // right
 		{
@@ -198,7 +198,7 @@ int move_snake(snk *snake, bdy body[MAX])
 			snake->head_x += 1;
 
 			// update speed
-			speed = 100000;
+			speed = 150000;
 		}
 	}
 
@@ -279,7 +279,7 @@ int game_over(int game_state, snk snake, bdy body[MAX], bdy blocks[MAX])
 	if (game_state == 1)
 	{
 		// wall collision
-		if (snake.head_x >= WIDTH || snake.head_y > HEIGHT || snake.head_x <= 0 || snake.head_y < 0)
+		if (snake.head_x > WIDTH || snake.head_y > HEIGHT || snake.head_x < 0 || snake.head_y < 0)
 		{
 			return 0;
 		}

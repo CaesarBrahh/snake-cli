@@ -1,0 +1,5 @@
+# compiled binary
+a.out
+
+# macOS system files
+.DS_STORE

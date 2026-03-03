@@ -22,7 +22,7 @@ Note: the snake cannot reverse direction.
 
 ## How to Run
 
-1. Install ncurses
+### 1. Install ncurses
 
 macOS (Homebrew)
 ```
@@ -34,12 +34,12 @@ Ubuntu / Debian
 sudo apt install libncurses-dev
 ```
 
-2. Build
+### 2. Build
 ```
 gcc main.c -lncurses
 ```
 
-3. Run
+### 3. Run
 ```
 ./a.out
 ```

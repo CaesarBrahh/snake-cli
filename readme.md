@@ -1,4 +1,4 @@
-# Terminal Snake (C + ncurses)
+# Snake CLI (C + ncurses)
 
 A classic Snake game implemented in C using the ncurses library for real-time terminal rendering and input handling. 
 
@@ -25,13 +25,21 @@ Note: the snake cannot reverse direction.
 1. Install ncurses
 
 macOS (Homebrew)
+```
 brew install ncurses
+```
 
 Ubuntu / Debian
+```
 sudo apt install libncurses-dev
+```
 
 2. Build
+```
 gcc main.c -lncurses
+```
 
 3. Run
+```
 ./a.out
+```
